@@ -258,14 +258,14 @@ function update()
 
 
 
-        if ((truth))
+        if ((truth) && (player[0].x <= (game.width / 3)))
         {
             jumpLeft();
 
 
         }
 
-        if ((!truth))
+        if ((!truth) && (player[0].x >= (game.width / 3)))
         {
             //player[0].kill();
 
