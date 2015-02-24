@@ -8,62 +8,72 @@ var game = new Phaser.Game(width, height, Phaser.AUTO, 'game', {preload: preload
 
 //variable declaration 
 
+// Score for the game
+
 var score = 0;
+
+
+// Text for the game
 
 var gameOverMessage;
 var highScoreMessage;
 
+ var style = {
+
+        fill: "#FFFFFF"
+
+    };
+
+
+// Boolean stops highscore when the player dies
 
 var highscoreTruth = true;
+
+// Functions for generating obstacles
 
 var template_construction_left = [];
 var template_construction_right = [];
 
 
-
+// Random variables, used to make obstacle generation random
 
 var random;
 var random2;
 var random3;
 
 
+// Main objects in the code
 
-
-var player = [];
+var player;
 var leftWalls = [];
 var rightWalls = [];
 var leftWallsWidth = 50;
 var outOfGame;
 
-var left_obstacles_1_template_1 = [];
 
+// Left obstacles
+
+var left_obstacles_1_template_1 = [];
 
 var left_obstacles_1_template_2 = [];
 var left_obstacles_2_template_2 = [];
 var left_obstacles_3_template_2 = [];
 
-
-
 var left_obstacles_1_template_3 = [];
 
-
-
-
+// Right obstacles
 
 var right_obstacles_1_template_1 = [];
-
-
 
 var right_obstacles_1_template_2 = [];
 var right_obstacles_2_template_2 = [];
 var right_obstacles_3_template_2 = [];
 
-
 var right_obstacles_1_template_3 = [];
 
 
 
-
+// Allows cotinuous generation of obstacles as independent objects
 
 var ObstacleNumber = 0;
 var wallNumber = 0;
@@ -73,6 +83,9 @@ var wallNumber = 0;
 
 
 var RandomGeneration = [];
+
+
+// Keys for input, and the boolean dictating orientation of gravity
 
 
 var spacebar;
@@ -107,53 +120,47 @@ function create()
     
     
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.stage.backgroundColor = "#FF0000";
+    game.stage.backgroundColor = "#999999";
     
     //create border of game
 
     wallGeneration();
-
-
-
-    
-    //walls[2] = game.add.sprite(125, 300, "Large_obstacles");
-    //walls[2].enableBody = true;
-    //game.physics.arcade.enable(walls[2]);
-    //walls[2].body.immovable = true;
-    
     
     //create player
     
-    player[0] = game.add.sprite(game.world.centerX, 325, "player");
-    player[0].enableBody = true;
-    game.physics.arcade.enable(player[0]);
-    player[0].body.gravity.x = -1800;
-    player[0].scale.setTo(1, 1);
+    player = game.add.sprite(game.world.centerX, 325, "player");
+    player.enableBody = true;
+    game.physics.arcade.enable(player);
+    player.body.gravity.x = -1800;
+    player.scale.setTo(1, 1);
 
+    // Creates object to player if he leaves the game view
+    
     outOfGame = game.add.sprite(0, 0, "walls");
     outOfGame.scale.setTo(20, 0.02);
     outOfGame.enableBody = true;
     game.physics.arcade.enable(outOfGame);
 
 
-   // game.time.events.loop(Phaser.Timer.SECOND, obstacleGenerationa, this);
+    // Highscore text
     
-    highScoreMessage = game.add.text(225, 600, "Time Alive: " + score);
+    highScoreMessage = game.add.text(225, 600, "Time Alive: " + score, style);
     
-    
+    // Obstacles are generated every two seconds
     
     game.time.events.loop(Phaser.Timer.SECOND * 2, GeneratingObstacles, this);
 
-
-        game.time.events.loop(Phaser.Timer.SECOND, highScore, this);
+    // Score increases every second
+    
+    game.time.events.loop(Phaser.Timer.SECOND, highScore, this);
 
     
-    //spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    // double jump means the player can change sides, using the up arrow key
 
 
     game.input.keyboard.addKey(Phaser.Keyboard.UP).onDown.add(doubleJumpCenter);
 
-
+    // single jump means the player can jump using the spacebar
 
     game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(jumpCenter);
 
@@ -170,73 +177,52 @@ function update()
 
 
 
-
+    // Gravity acting on the player
 
     if (truth)
     {
-    player[0].body.gravity.x = -3600;
+    player.body.gravity.x = -3600;
     }
     if (!truth) {
 
-          player[0].body.gravity.x = 3600;
+          player.body.gravity.x = 3600;
       }
 
 
 
     
         
-    
+        // Wall collision handlers  
   
-        game.physics.arcade.collide(player[0], leftWalls, configureToRight);
-        game.physics.arcade.collide(player[0], rightWalls, configureToLeft);
+        game.physics.arcade.collide(player, leftWalls, configureToRight);
+        game.physics.arcade.collide(player, rightWalls, configureToLeft);
     
 
-        game.physics.arcade.collide(player[0], outOfGame, playerDead);
+        // Player collision handler, out of game view kill
     
+        game.physics.arcade.collide(player, outOfGame, playerDead);
     
+        // left obstacle collision handlers
     
-        game.physics.arcade.collide(player[0], left_obstacles_1_template_1,  configureToRight);
-       // game.physics.arcade.overlap(obstacleKiller, left_obstacles_1_template_1,  obstacleDeath_template1);
+        game.physics.arcade.collide(player, left_obstacles_1_template_1,  configureToRight);
+      
+        game.physics.arcade.collide(player, left_obstacles_1_template_2,  configureToRight);
+        game.physics.arcade.collide(player, left_obstacles_2_template_2,  configureToRight);
+        game.physics.arcade.collide(player, left_obstacles_3_template_2,  configureToRight);
     
-    
-    
-        game.physics.arcade.collide(player[0], left_obstacles_1_template_2,  configureToRight);
-       // game.physics.arcade.overlap(obstacleKiller, left_obstacles_1_template_2,  obstacleDeath_template2);
-        game.physics.arcade.collide(player[0], left_obstacles_2_template_2,  configureToRight);
-        //game.physics.arcade.overlap(obstacleKiller, left_obstacles_2_template_2,  obstacleDeath_template2);
-        game.physics.arcade.collide(player[0], left_obstacles_3_template_2,  configureToRight);
-        //game.physics.arcade.overlap(obstacleKiller, left_obstacles_3_template_2,  obstacleDeath_template2);
-        //game.physics.arcade.collide(player[0], left_obstacles_3[i],  configureToRight);
-    
-    
-
-    
-    
-        game.physics.arcade.collide(player[0], left_obstacles_1_template_3,  playerDead);
-       // game.physics.arcade.overlap(obstacleKiller, left_obstacles_1_template_3,  obstacleDeath_template3);
+        game.physics.arcade.collide(player, left_obstacles_1_template_3,  playerDead);
+  
         
-        game.physics.arcade.collide(player[0], right_obstacles_1_template_1,  configureToLeft);
-        //game.physics.arcade.overlap(obstacleKiller, right_obstacles_1_template_1,  obstacleDeath_template1);
+        // Right obstacle collision handlers
     
-
-        game.physics.arcade.collide(player[0], right_obstacles_1_template_2, configureToLeft);
+        game.physics.arcade.collide(player, right_obstacles_1_template_1,  configureToLeft);
     
-        game.physics.arcade.collide(player[0], right_obstacles_2_template_2,  configureToLeft);
-       // game.physics.arcade.overlap(obstacleKiller, right_obstacles_1_template_2,  obstacleDeath_template2);
-        game.physics.arcade.collide(player[0], right_obstacles_3_template_2,  configureToLeft);
-       // game.physics.arcade.overlap(obstacleKiller, right_obstacles_3_template_2,  obstacleDeath_template2);
+        game.physics.arcade.collide(player, right_obstacles_1_template_2, configureToLeft);
+        game.physics.arcade.collide(player, right_obstacles_2_template_2,  configureToLeft);
+        game.physics.arcade.collide(player, right_obstacles_3_template_2,  configureToLeft);
     
-    
-    
-        game.physics.arcade.collide(player[0], right_obstacles_1_template_3,  playerDead);
-        //game.physics.arcade.overlap(obstacleKiller, right_obstacles_1_template_3,  obstacleDeath_template3);
-        //game.physics.arcade.collide(player[0], right_obstacles[i]);
-    
-    
-    
-       //game.physics.arcade.collide(player[0], Large_Left_Obstacles[0], obstaclecollision);
-        //game.physics.arcade.collide(player[0], Large_Left_Obstacles[1], obstaclecollision); 
-   
+        game.physics.arcade.collide(player, right_obstacles_1_template_3,  playerDead);
+       
     
     
 }
@@ -244,36 +230,25 @@ function update()
 
 
 
-
-
  function jumpCenter()
  {
 
+        // Different jump functions called dependent on which side the player is on, the other condition prevents the user flying the character in thin air
 
-     // Ben Insert configure to right / left code here, so that the variable scoping works-- otherwise truth never becomes false
-
-
-
-
-
-
-
-        if ((truth) && (player[0].x <= (game.width / 3)))
+        if ((truth) && (player.x <= (game.width / 3.5)))
         {
             jumpLeft();
 
 
         }
 
-        if ((!truth) && (player[0].x >= (game.width / 3)))
+        if ((!truth) && (player.x >= (game.width / 3.5)))
         {
-            //player[0].kill();
+           
 
             jumpRight();
 
         }
-
-
 
 
  }
@@ -281,6 +256,8 @@ function update()
 
 function doubleJumpCenter()
 {
+    
+    // Function works the same as the previous jump function
 
     if (truth)
     {
@@ -306,7 +283,7 @@ function doubleJumpCenter()
 function jumpLeft()
 {
 
-    player[0].body.velocity.x = 1200;
+    player.body.velocity.x = 1200;
 
 
 }
@@ -317,7 +294,7 @@ function jumpLeft()
 function jumpRight()
 {
 
-    player[0].body.velocity.x = -1200;
+    player.body.velocity.x = -1200;
 
 
 
@@ -330,7 +307,7 @@ function doubleJumpLeft()
 {
 
 
-    player[0].body.velocity.x = 2400;
+    player.body.velocity.x = 2400;
 
 }
 
@@ -339,26 +316,17 @@ function doubleJumpRight()
 {
 
 
-    player[0].body.velocity.x = -2400;
+    player.body.velocity.x = -2400;
 
 }
 
 
 
-
-
-
-
-
-
-
-
-
 function configureToRight()
 {
-    //player.body.velocity.x = 0;
+    // Truth boolean value changes, altering the gravity properties
     truth = true;
-    player[0].body.gravity.x = 0;
+    player.body.gravity.x = 0;
     
     
     
@@ -370,51 +338,12 @@ function configureToRight()
 
 function configureToLeft()
 {
-    //player.body.velocity.x = 0;
+    // Truth boolean value changes, altering the gravity properties
     truth = false;
-   player[0].body.gravity.x = 0;
+   player.body.gravity.x = 0;
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
  template_construction_left[0] = function(x, y, z)
 {
@@ -427,8 +356,7 @@ function configureToLeft()
     left_obstacles_1_template_1[z].body.velocity.y = -300;
     left_obstacles_1_template_1[z].scale.setTo(0.3, 0.7);
     left_obstacles_1_template_1[z].body.immovable = true; 
-   // left_obstacles_1_template_1[z].checkWorldBounds = true;
-   // left_obstacles_1_template_1[z].outOfBoundsKill = true;
+  
     ObstacleNumber = ObstacleNumber + 1;
 
 
@@ -446,11 +374,7 @@ function configureToLeft()
     left_obstacles_1_template_2[z].body.velocity.y = -300;
     left_obstacles_1_template_2[z].scale.setTo(0.3, 0.7);
     left_obstacles_1_template_2[z].body.immovable = true; 
-   // left_obstacles_1_template_2[z].checkWorldBounds = true;
-   // left_obstacles_1_template_2[z].outOfBoundsKill = true;
-    
-    //left_obstacles_1_template_2[z].outOfBoundsKill = true;
-    
+
     
      left_obstacles_2_template_2[z] = game.add.sprite(x, (y + 200), "Large_obstacles");
     game.physics.arcade.enable(left_obstacles_2_template_2[z]);
@@ -458,8 +382,7 @@ function configureToLeft()
     left_obstacles_2_template_2[z].body.velocity.y = -300;
     left_obstacles_2_template_2[z].scale.setTo(0.7, 0.7);
     left_obstacles_2_template_2[z].body.immovable = true; 
-   //  left_obstacles_2_template_2[z].checkWorldBounds = true;
-   // left_obstacles_2_template_2[z].outOfBoundsKill = true;
+
     
      left_obstacles_3_template_2[z] = game.add.sprite(x, (y + 400), "Large_obstacles");
     game.physics.arcade.enable(left_obstacles_3_template_2[z]);
@@ -467,8 +390,7 @@ function configureToLeft()
     left_obstacles_3_template_2[z].body.velocity.y = -300;
     left_obstacles_3_template_2[z].scale.setTo(0.3, 0.7);
     left_obstacles_3_template_2[z].body.immovable = true; 
-   //  left_obstacles_3_template_2[z].checkWorldBounds = true;
-    //left_obstacles_3_template_2[z].outOfBoundsKill = true;
+   
      
     ObstacleNumber = ObstacleNumber + 1;
     
@@ -485,15 +407,14 @@ function configureToLeft()
     left_obstacles_1_template_3[z].body.velocity.y = -300;
     left_obstacles_1_template_3[z].scale.setTo(0.5, 0.7);
     left_obstacles_1_template_3[z].body.immovable = true; 
-   // left_obstacles_1_template_3[z].checkWorldBounds = true;
-    //left_obstacles_1_template_3[z].outOfBoundsKill = true;
+   
      
      
     ObstacleNumber = ObstacleNumber + 1;
     
     
     
-    //left_obstacles_4[z].scale.x = -1; 
+   
     
     
     
@@ -509,7 +430,7 @@ template_construction_left[3] = function()
     
     
     
-    
+      // Creates blank space
     
     
     
@@ -528,8 +449,6 @@ template_construction_left[3] = function()
     right_obstacles_1_template_1[z].scale.setTo(0.3, 0.7);
     right_obstacles_1_template_1[z].body.immovable = true; 
     
-     //right_obstacles_1_template_2[z].checkWorldBounds = true;
-   // right_obstacles_1_template_2[z].outOfBoundsKill = true;
     
     ObstacleNumber = ObstacleNumber + 1;
      
@@ -554,8 +473,7 @@ template_construction_left[3] = function()
     right_obstacles_1_template_2[z].body.velocity.y = -300;
     right_obstacles_1_template_2[z].scale.setTo(0.3, 0.7);
     right_obstacles_1_template_2[z].body.immovable = true; 
-    //right_obstacles_1_template_1[z].checkWorldBounds = true;
-    //right_obstacles_1_template_1[z].outOfBoundsKill = true;
+
         
      
         right_obstacles_2_template_2[z] = game.add.sprite(x, (y + 200), "Large_obstacles");
@@ -565,10 +483,7 @@ template_construction_left[3] = function()
     right_obstacles_2_template_2[z].body.velocity.y = -300;
     right_obstacles_2_template_2[z].scale.setTo(0.7, 0.7);
     right_obstacles_2_template_2[z].body.immovable = true; 
-    //right_obstacles_2_template_1[z].sprite.checkWorldBounds = true;
-    //right_obstacles_2_template_1[z].outOfBoundsKill = true;
-      //right_obstacles_2_template_1[z].checkWorldBounds = true;
-    //right_obstacles_2_template_1[z].outOfBoundsKill = true;
+    
      
      
      
@@ -580,25 +495,10 @@ template_construction_left[3] = function()
     right_obstacles_3_template_2[z].body.velocity.y = -300;
     right_obstacles_3_template_2[z].scale.setTo(0.3, 0.7);
     right_obstacles_3_template_2[z].body.immovable = true; 
-    //right_obstacles_3_template_1[z].checkWorldBounds = true;
-    //right_obstacles_3_template_1[z].outOfBoundsKill = true;
+  
     
     ObstacleNumber = ObstacleNumber + 1;
      
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
- 
     
 }
 
@@ -613,8 +513,7 @@ template_construction_left[3] = function()
     right_obstacles_1_template_3[z].body.velocity.y = -300;
     right_obstacles_1_template_3[z].scale.setTo(0.5, 0.75);
    right_obstacles_1_template_3[z].body.immovable = true;
-    // right_obstacles_1_template_3[z].checkWorldBounds = true;
-    //right_obstacles_1_template_3[z].outOfBoundsKill = true;
+    
      
     ObstacleNumber = ObstacleNumber + 1;
     
@@ -623,7 +522,7 @@ template_construction_left[3] = function()
  template_construction_right[3] = function()
 {
     
-    
+    // Creates blank space
     
 }
 
@@ -644,25 +543,17 @@ template_construction_left[3] = function()
 
 
     // random generator dictates which side of the game is safe
+    
     RandomGeneration[random3]();
-
-
-
-
-
-
 
     
 }
  
- 
- 
-
 
  RandomGeneration[0] = function()
 {
     
-    
+    // Generates random sequence of obstacles from the template functions
 
     random = game.rnd.integerInRange(0, 2); 
     random2 = game.rnd.integerInRange(5, 10);
@@ -675,20 +566,13 @@ template_construction_left[3] = function()
     template_construction_right[2](width - leftWallsWidth, height + 200 + (100 * i), ObstacleNumber);
     }
     
-    
-    
-    
-    
-    
-    
-    
 }
 
 
 RandomGeneration[1] = function()
 {
 
-    // left side is not safe for block
+    // Generates random sequence of obstacles from the template functions
     
     random = game.rnd.integerInRange(0, 2); 
     random2 = game.rnd.integerInRange(5, 10);
@@ -698,15 +582,7 @@ RandomGeneration[1] = function()
     {
     template_construction_left[2](leftWallsWidth, height + 200 + (100 * i), ObstacleNumber);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
 }
 
 
@@ -714,6 +590,8 @@ RandomGeneration[1] = function()
 
 function wallGeneration()
 {
+    
+    // Keeps the same walls on the game, prevents lag, they are repositioned when necessary
 
     leftWalls[wallNumber] = game.add.sprite(0, wallNumber * 650, "walls");
     leftWalls[wallNumber].enableBody = true;
@@ -744,13 +622,9 @@ function wallGeneration()
 function playerDead()
 {
 
-    player[0].kill();
+    player.kill();
 
-    var style = {
-
-        fill: "#FFFFFF"
-
-    };
+   
 
     gameOverMessage = game.add.text(50, game.world.centerY, "Game over, press the spacebar to retry", style);
 
