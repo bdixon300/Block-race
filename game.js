@@ -235,17 +235,15 @@ function update()
 
         // Different jump functions called dependent on which side the player is on, the other condition prevents the user flying the character in thin air
 
-        if ((truth) && (player.x <= (game.width / 3.5)))
+        if ((truth) && (player.x < (width / 3.5)))
         {
             jumpLeft();
 
-
         }
 
-        if ((!truth) && (player.x >= (game.width / 3.5)))
+        if ((!truth) && (player.x > (width - (width / 3))))
         {
-           
-
+        
             jumpRight();
 
         }
@@ -380,7 +378,7 @@ function configureToLeft()
     game.physics.arcade.enable(left_obstacles_2_template_2[z]);
     left_obstacles_2_template_2[z].enableBody = true;
     left_obstacles_2_template_2[z].body.velocity.y = -300;
-    left_obstacles_2_template_2[z].scale.setTo(0.7, 0.7);
+    left_obstacles_2_template_2[z].scale.setTo(0.6, 0.7);
     left_obstacles_2_template_2[z].body.immovable = true; 
 
     
@@ -481,7 +479,7 @@ template_construction_left[3] = function()
     game.physics.arcade.enable(right_obstacles_2_template_2[z]);
     right_obstacles_2_template_2[z].enableBody = true;
     right_obstacles_2_template_2[z].body.velocity.y = -300;
-    right_obstacles_2_template_2[z].scale.setTo(0.7, 0.7);
+    right_obstacles_2_template_2[z].scale.setTo(0.6, 0.7);
     right_obstacles_2_template_2[z].body.immovable = true; 
     
      
