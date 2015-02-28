@@ -85,13 +85,13 @@ var wallNumber = 0;
 var RandomGeneration = [];
 
 
-// Keys for input, and the boolean dictating orientation of gravity
+// Keys for input, and the boolean dictating orientation of gravity and contact with obstacles
 
 
 var spacebar;
 var key;
 var truth = true;
-
+var truth2 = true;
 
 
 
@@ -188,10 +188,6 @@ function update()
           player.body.gravity.x = 3600;
       }
 
-
-
-    
-        
         // Wall collision handlers  
   
         game.physics.arcade.collide(player, leftWalls, configureToRight);
@@ -223,6 +219,12 @@ function update()
     
         game.physics.arcade.collide(player, right_obstacles_1_template_3,  playerDead);
        
+      
+    if (player.x == width / 2)
+    {
+        truth2 = false;       
+    }
+    
     
     
 }
@@ -233,9 +235,9 @@ function update()
  function jumpCenter()
  {
 
-        // Different jump functions called dependent on which side the player is on, the other condition prevents the user flying the character in thin air
+     // Different jump functions called dependent on which side the player is on, the other condition prevents the user flying the character in thin air
 
-        if ((truth) && (player.x < (width / 3.5)))
+         if ((truth) && (player.x < (width / 3.5)))
         {
             jumpLeft();
 
@@ -247,7 +249,6 @@ function update()
             jumpRight();
 
         }
-
 
  }
 
@@ -325,9 +326,9 @@ function configureToRight()
     // Truth boolean value changes, altering the gravity properties
     truth = true;
     player.body.gravity.x = 0;
-    
-    
-    
+    truth2 = true;
+   
+   
     
 }
 
@@ -339,7 +340,8 @@ function configureToLeft()
     // Truth boolean value changes, altering the gravity properties
     truth = false;
    player.body.gravity.x = 0;
-
+    truth2 = true;
+   
 
 }
 
@@ -649,8 +651,8 @@ function reloadGame()
 
 function highScore()
 {
-
-
+    if (truth2)
+    {
     if (highscoreTruth) {
 
 
@@ -660,7 +662,7 @@ function highScore()
         highScoreMessage.text = "Time Alive: " + score;
 
     }
-
+    }
 }
 
 
